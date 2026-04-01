@@ -1,3 +1,6 @@
+package io.saori.protocol.core;
+
+
 public class Product {
 
     private String ticker;   // asset "address" — e.g. "LAPTOP-01"

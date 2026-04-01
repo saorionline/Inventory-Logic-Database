@@ -1,3 +1,5 @@
+package io.saori.protocol.core;
+
 public class AtomicUpdateException extends Exception {
 
     private final String ticker;

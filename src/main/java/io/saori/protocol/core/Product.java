@@ -21,17 +21,22 @@ public class Product {
      * Throws AtomicUpdateException if the trade cannot be fulfilled.
      */
     public void updateStock(int qty) throws AtomicUpdateException {
-        if (qty <= 0) {
-            throw new AtomicUpdateException(ticker, qty, stock);
-        }
-        if (stock < qty) {
-            throw new AtomicUpdateException(ticker, qty, stock);
-        }
-        // Only reaches here if BOTH guards pass — all-or-nothing
-        this.stock -= qty;
-        System.out.printf("[OK]       %s | stock: %d → %d%n",
-            ticker, stock + qty, stock);
+    // 1. Calculate what the new stock WOULD be
+    // If qty is -4 (BUY), stock goes down. If qty is +2 (SELL), stock goes up.
+    int newStock = this.stock + qty;
+
+    // 2. The Golden Rule of Liquidity: You cannot have less than 0 stock.
+    if (newStock < 0) {
+        // We use Math.abs to show the user how much they tried to take
+        throw new AtomicUpdateException(ticker, Math.abs(qty), stock);
     }
+
+    // 3. Execution: If we didn't crash above, the trade is inevitable.
+    System.out.printf("[OK]       %s | stock: %d → %d%n", 
+                      ticker, this.stock, newStock);
+                      
+    this.stock = newStock;
+}
 
     // Getters
     public String getTicker() { return ticker; }
@@ -44,4 +49,10 @@ public class Product {
         return String.format("Product{ticker='%s', name='%s', price=%.2f, stock=%d}",
             ticker, name, price, stock);
     }
+
+    // This "bridges" the name your Market expects (quantity) 
+    // with the name your Product uses (stock).
+    public int getQuantity() {
+    return this.stock;
+}
 }
